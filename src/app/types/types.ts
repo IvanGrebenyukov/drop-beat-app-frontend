@@ -50,3 +50,8 @@ export interface FollowUser {
 	avatarUrl: string | null
 	isSeller: boolean
 }
+
+export type Tag = {
+	id: string;
+	name: string;
+};

@@ -1,6 +1,7 @@
 'use client';
 import { Button } from '@/app/components/common/Button'
 import { Logo } from '@/app/components/common/Logo'
+import { CartIconWithBadge } from '@/app/components/layout/CartIconWithBadge'
 import { ProfileMenu } from '@/app/components/layout/ProfileMenu'
 import { useUserStore } from '@/app/lib/stores/userStore'
 import {
@@ -53,7 +54,7 @@ export const Header = () => {
 									<HeartIcon className="h-6 w-6" />
 								</Link>
 								<button className='text-gray-400 hover:text-white'>
-									<ShoppingCartIcon className='h-6 w-6' />
+									<CartIconWithBadge />
 								</button>
 								<ProfileMenu />
 							</>

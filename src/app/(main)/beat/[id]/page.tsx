@@ -1,5 +1,6 @@
 'use client';
 
+import { AddToCartButton } from '@/app/components/common/AddToCartButton'
 import { Button } from '@/app/components/common/Button'
 import { FavoriteButton } from '@/app/components/common/FavoriteButton'
 import apiClient from '@/app/lib/api/client'
@@ -108,10 +109,7 @@ export default function BeatDetailsPage({  }: { params: { id: string } }) {
 						</Button>
 						<div className="flex items-center gap-4">
 							<span className="text-2xl font-bold">{beat.price} ₽</span>
-							<Button variant="primary" className="gap-2">
-								<ShoppingCartIcon className="w-5 h-5" />
-								В корзину
-							</Button>
+							<AddToCartButton beatId={beat.id} price={beat.price} />
 						</div>
 					</div>
 					

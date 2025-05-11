@@ -55,5 +55,12 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
 			playlist: [...state.playlist, track]
 		})),
 		setDuration: (duration) => set({ duration }),
+		reset: () => set({
+			currentTrack: null,
+			playlist: [],
+			isPlaying: false,
+			currentTime: 0,
+			duration: 0
+		})
 	},
 }));

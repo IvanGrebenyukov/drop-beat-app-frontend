@@ -1,6 +1,7 @@
 'use client'
 
 import { AudioPlayer } from '@/app/components/player/AudioPlayer'
+import { useCartStore } from '@/app/lib/stores/cartStore'
 import { useUserStore } from '@/app/lib/stores/userStore'
 import { useEffect } from 'react'
 import { BeatLoader } from 'react-spinners'
@@ -13,10 +14,18 @@ export default function ClientLayout({
 }) {
 	const initialize = useUserStore(state => state.initialize);
 	const isInitialized = useUserStore(state => state.isInitialized);
+	const user = useUserStore(state => state.user);
+	const fetchCart = useCartStore(state => state.fetchCart);
 	
 	useEffect(() => {
 		initialize();
 	}, [initialize]);
+	
+	useEffect(() => {
+		if (isInitialized && user) {
+			fetchCart();
+		}
+	}, [isInitialized, user, fetchCart]);
 	
 	if (!isInitialized) {
 		return (

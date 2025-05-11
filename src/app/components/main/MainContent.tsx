@@ -11,10 +11,9 @@ import { useState } from 'react'
 
 
 export const MainContent = () => {
-	const { currentPage, itemsPerPage, actions } = useFiltersStore();
-	const [totalItems, setTotalItems] = useState(0);
-	
+	const { currentPage, itemsPerPage, totalItems, actions } = useFiltersStore();
 	const totalPages = Math.ceil(totalItems / itemsPerPage);
+	
 	
 	return (
 		<main className="flex-1">
@@ -24,11 +23,13 @@ export const MainContent = () => {
 			<BeatsGrid />
 			
 			<div className="p-6 flex justify-center">
-				<Pagination
-					currentPage={currentPage}
-					totalPages={totalPages}
-					onPageChange={actions.setPage}
-				/>
+				{totalPages > 1 && (
+					<Pagination
+						currentPage={currentPage}
+						totalPages={totalPages}
+						onPageChange={actions.setPage}
+					/>
+				)}
 			</div>
 		</main>
 	);

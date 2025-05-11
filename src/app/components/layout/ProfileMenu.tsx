@@ -10,7 +10,7 @@ export const ProfileMenu = () => {
 	const { user, logout } = useUserStore();
 	
 	return (
-		<Menu as={"div"} className={"relative"}>
+		<Menu as={"div"} className={"relative z-50"}>
 			<Menu.Button className={"flex items-center gap-2"}>
 				<img src={user?.avatarUrl || '/default-avatar.png'}
 				className={"h-8 w-8 rounded-full"}
@@ -95,8 +95,7 @@ export const ProfileMenu = () => {
 						</Menu.Item>
 						<Menu.Item>
 							{({ active }) => (
-								<Link href="/cart"
-								      className={`${active ? 'bg-gray-700' : ''} block px-4 py-2 text-white`}>
+								<Link href="/cart" className={`${active ? 'bg-gray-700' : ''} block px-4 py-2 text-white`}>
 									Корзина
 								</Link>
 							)}
