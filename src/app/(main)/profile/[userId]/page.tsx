@@ -7,7 +7,7 @@ import apiClient from '@/app/lib/api/client'
 import { useUserStore } from '@/app/lib/stores/userStore'
 import { CheckBadgeIcon, FlagIcon } from '@heroicons/react/24/solid'
 import Link from 'next/link'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
 type SocialPlatform = 'Vk' | 'YouTube' | 'Instagram' | 'TikTok' | 'SoundCloud';
@@ -32,6 +32,7 @@ export default function UserProfilePage({  }: { params: { userId: string } }) {
 	const [isFollowing, setIsFollowing] = useState(false)
 	const [isLoading, setIsLoading] = useState(true)
 	const [isFollowLoading, setIsFollowLoading] = useState(false)
+	const router = useRouter();
 	
 	const checkFollowing = async () => {
 		try {
@@ -42,6 +43,7 @@ export default function UserProfilePage({  }: { params: { userId: string } }) {
 			return false
 		}
 	}
+	
 	
 	useEffect(() => {
 		const fetchData = async () => {
@@ -80,6 +82,25 @@ export default function UserProfilePage({  }: { params: { userId: string } }) {
 			console.error('Follow error:', error)
 		} finally {
 			setIsFollowLoading(false)
+		}
+	}
+	
+	const handleStartChat = async () => {
+		try {
+				let chatId: string
+				const response = await apiClient.get(`/chat/private-chat-id/${params.userId}`)
+				if(response.data === ""){
+					
+					const response = await apiClient.post(`/chat/create-private/${params.userId}`)
+					console.log(response.data)
+					chatId = response.data
+					router.push(`/chats/${chatId}`)
+				}
+				chatId = response.data
+				router.push(`/chats/${chatId}`)
+			
+		} catch (error) {
+			console.error('Error starting chat:', error)
 		}
 	}
 	
@@ -129,7 +150,9 @@ export default function UserProfilePage({  }: { params: { userId: string } }) {
 								{isFollowing ? 'Отписаться' : 'Подписаться'}
 							</Button>
 						)}
-						<Button variant='ghost'>Чат</Button>
+						<Button variant="ghost" onClick={handleStartChat}>
+							Перейти в чат
+						</Button>
 					</div>
 					
 					<div className='bg-gray-800 p-4 rounded-xl space-y-4'>

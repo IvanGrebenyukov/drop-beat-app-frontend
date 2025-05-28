@@ -10,7 +10,8 @@ type User = {
 	avatarUrl: string;
 };
 
-type UserStore = {
+
+type UserState = {
 	user: User | null;
 	isInitialized: boolean;
 	initialize: () => Promise<void>;
@@ -19,7 +20,7 @@ type UserStore = {
 	fetchProfile: () => Promise<void>;
 };
 
-export const useUserStore = create<UserStore>((set, get) => ({
+export const useUserStore = create<UserState>((set, get) => ({
 	user: null,
 	isInitialized: false,
 	

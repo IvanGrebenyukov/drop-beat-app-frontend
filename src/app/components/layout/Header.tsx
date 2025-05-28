@@ -44,9 +44,9 @@ export const Header = () => {
 						)}
 						{user ? (
 							<>
-								<button className='text-gray-400 hover:text-white'>
-									<ChatBubbleLeftIcon className='h-6 w-6' />
-								</button>
+								<Link href="/chats" className="text-gray-400 hover:text-white">
+									<ChatBubbleLeftIcon className="h-6 w-6" />
+								</Link>
 								<button className='text-gray-400 hover:text-white'>
 									<BellIcon className='h-6 w-6' />
 								</button>

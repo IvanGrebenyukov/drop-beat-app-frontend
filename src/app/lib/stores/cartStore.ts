@@ -1,5 +1,6 @@
 // stores/cartStore.ts
 import apiClient from '@/app/lib/api/client'
+import { useUserStore } from '@/app/lib/stores/userStore'
 import { create } from 'zustand';
 
 type CartItem = {
@@ -25,15 +26,36 @@ type CartState = {
 	addToCart: (beatId: string) => Promise<void>;
 	removeFromCart: (beatId: string) => Promise<void>;
 	clearCart: () => void;
+	paymentStatus: 'idle' | 'processing' | 'success' | 'failed';
+	paymentId: string | null;
+	paymentEmail: string | null;
+	errorMessage: string | null;
+	startPayment: (email: string) => Promise<void>;
+	checkPaymentStatus: () => Promise<void>;
+	resetPayment: () => void;
+	showEmailModal: boolean;
+	actions: {
+		// ... другие экшены
+		setShowEmailModal: (value: boolean) => void;
+		resetPayment: () => void;
+	};
 };
 
-export const useCartStore = create<CartState>((set) => ({
+
+
+export const useCartStore = create<CartState>((set, get) => ({
 	cartId: null,
 	items: [],
 	count: 0,
 	total: 0,
 	isLoading: false,
 	error: null,
+	paymentStatus: 'idle',
+	paymentId: null,
+	paymentEmail: null,
+	errorMessage: null,
+	showEmailModal: false,
+	
 	
 	fetchCart: async () => {
 		set({ isLoading: true, error: null });
@@ -71,5 +93,63 @@ export const useCartStore = create<CartState>((set) => ({
 		}
 	},
 	
-	clearCart: () => set({ items: [], count: 0, total: 0, cartId: null })
+	clearCart: () => set({ items: [], count: 0, total: 0, cartId: null }),
+	
+	startPayment: async (email) => {
+		try {
+			const response = await apiClient.post('/Payment/create', {
+				userId: useUserStore.getState().user?.id,
+				email
+			});
+			
+			set({
+				paymentStatus: 'processing',
+				paymentId: response.data.paymentId,
+				paymentEmail: email
+			});
+			
+			window.open(response.data.paymentUrl, '_blank');
+		} catch (error) {
+			set({ errorMessage: 'Ошибка создания платежа' });
+		}
+	},
+	
+	checkPaymentStatus: async () => {
+		const { paymentId, timeLeft } = get();
+		try {
+			const response = await apiClient.post('/Payment/process', {
+				userId: useUserStore.getState().user?.id,
+				paymentId
+			});
+			
+			if (response.data.success) {
+				set({ paymentStatus: 'success' });
+				return true;
+			}
+			return false;
+		} catch (error) {
+			// Не меняем статус сразу при ошибке 400
+			console.error('Payment check error:', error);
+			return false;
+		}
+	},
+	
+	resetPayment: () => set({
+		paymentStatus: 'idle',
+		paymentId: null,
+		paymentEmail: null,
+		errorMessage: null
+	}),
+	
+	actions: {
+		// ... другие экшены
+		setShowEmailModal: (value) => set({ showEmailModal: value }),
+		resetPayment: () => set({
+			paymentStatus: 'idle',
+			paymentId: null,
+			paymentEmail: null,
+			errorMessage: null,
+			showEmailModal: false
+		}),
+	},
 }));

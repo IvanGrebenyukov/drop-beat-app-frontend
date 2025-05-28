@@ -38,7 +38,7 @@ export const AuthForm = ({
 			</div>
 			
 			<div>
-				<label className={'block text-gray-300 mb-2'}>Password</label>
+				<label className={'block text-gray-300 mb-2'}>Пароль</label>
 				<input
 					type={'password'}
 					{...register('password')}

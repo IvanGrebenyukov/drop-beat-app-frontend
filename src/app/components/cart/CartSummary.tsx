@@ -1,11 +1,17 @@
 'use client'
 
+import { EmailFormModal } from '@/app/components/cart/EmailFormModal'
+import { PaymentModal } from '@/app/components/cart/PaymentModal'
 import { Button } from '@/app/components/common/Button'
 import { useCartStore } from '@/app/lib/stores/cartStore'
 import { motion } from 'framer-motion';
+import { useState } from 'react'
+import toast from 'react-hot-toast'
 
 export const CartSummary = () => {
-	const { total, count } = useCartStore();
+	const { total, count, paymentStatus , actions, showEmailModal,  } = useCartStore();
+	
+	
 	
 	
 	return (
@@ -37,10 +43,22 @@ export const CartSummary = () => {
 					</div>
 					
 					<motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-						<Button variant="primary" className="w-full py-3 text-lg">
+						<Button
+							variant="primary"
+							className="w-full py-3 text-lg"
+							onClick={() => {
+								if (count === 0) {
+									toast.error('Корзина пуста');
+									return;
+								}
+								actions.setShowEmailModal(true);
+							}}
+						>
 							Перейти к оплате
 						</Button>
 					</motion.div>
+					{showEmailModal && <EmailFormModal />}
+					{paymentStatus !== 'idle' && <PaymentModal />}
 					
 					<p className="text-xs text-gray-500 mt-4">
 						Нажимая кнопку "Перейти к оплате", вы соглашаетесь с нашими Условиями обслуживания,

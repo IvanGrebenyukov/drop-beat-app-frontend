@@ -1,6 +1,7 @@
 'use client'
 import { ChatBubbleLeftIcon } from '@heroicons/react/24/outline'
 import { XMarkIcon } from '@heroicons/react/24/solid'
+import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import apiClient from '@/app/lib/api/client'
 import Link from 'next/link'
@@ -26,6 +27,7 @@ export const FollowList = ({ userId, mode, isCurrentUser }: FollowListProps) => 
 	const [isLoading, setIsLoading] = useState(false)
 	const [error, setError] = useState('')
 	const [isSearching, setIsSearching] = useState(false)
+	const router = useRouter();
 	
 	const fetchData = async (searchTerm?: string) => {
 		try {
@@ -74,6 +76,7 @@ export const FollowList = ({ userId, mode, isCurrentUser }: FollowListProps) => 
 			setError('Ошибка при отписке')
 		}
 	}
+	
 	
 	return (
 		<div className="max-w-4xl mx-auto p-6">
@@ -173,9 +176,6 @@ export const FollowList = ({ userId, mode, isCurrentUser }: FollowListProps) => 
 										Отписаться
 									</Button>
 								)}
-								<Button variant="ghost">
-									<ChatBubbleLeftIcon className="w-5 h-5" />
-								</Button>
 							</div>
 						</div>
 					))}
