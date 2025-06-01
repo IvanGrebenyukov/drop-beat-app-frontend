@@ -6,6 +6,7 @@ import { LicenseSelector } from '@/app/components/beat-upload/LicenseSelector'
 import { TagInput } from '@/app/components/beat-upload/TagInput'
 import { Button } from '@/app/components/common/Button'
 import { Input } from '@/app/components/common/Input'
+import { Header } from '@/app/components/layout/Header'
 import apiClient from '@/app/lib/api/client'
 import { useUserStore } from '@/app/lib/stores/userStore'
 import type { Genre, Guid, Mood } from '@/app/types/types'
@@ -113,72 +114,76 @@ export default function UploadBeatPage() {
 	}
 	
 	return (
-		<div className="max-w-4xl mx-auto p-6">
-			<h1 className="text-3xl font-bold mb-8">Добавить новый бит</h1>
-			
-			<form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-				<FileUpload
-					onAudioSelect={(file) => setValue('audioFile', file)}
-					onCoverSelect={(file) => setValue('coverFile', file)}
-					errors={errors}
-				/>
+		<div className="min-h-screen bg-gray-900">
+			<Header />
+			<div className="max-w-4xl mx-auto p-6">
+				<h1 className="text-3xl font-bold mb-8">Добавить новый бит</h1>
 				
-				<div className="space-y-4">
-					<Input
-						label="Название бита"
-						{...register('title', { required: 'Обязательное поле' })}
-						error={errors.title?.message}
+				<form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+					<FileUpload
+						onAudioSelect={(file) => setValue('audioFile', file)}
+						onCoverSelect={(file) => setValue('coverFile', file)}
+						errors={errors}
 					/>
 					
-					<Input
-						label="Описание"
-						as="textarea"
-						rows={3}
-						{...register('description')}
+					<div className="space-y-4">
+						<Input
+							label="Название бита"
+							{...register('title', { required: 'Обязательное поле' })}
+							error={errors.title?.message}
+						/>
+						
+						<Input
+							label="Описание"
+							as="textarea"
+							rows={3}
+							{...register('description')}
+						/>
+						
+						<Input
+							label="BPM"
+							type="number"
+							{...register('bpm', {
+								required: 'Обязательное поле',
+								min: { value: 60, message: 'Минимум 60 BPM' },
+								max: { value: 200, message: 'Максимум 200 BPM' }
+							})}
+							error={errors.bpm?.message}
+						/>
+					</div>
+					
+					<LicenseSelector
+						selected={watch('licenseType')}
+						onSelect={(type) => {
+							setValue('licenseType', type)
+							if (type === 0) setValue('price', 0)
+						}}
+						register={register}
+						errors={errors}
 					/>
 					
-					<Input
-						label="BPM"
-						type="number"
-						{...register('bpm', {
-							required: 'Обязательное поле',
-							min: { value: 60, message: 'Минимум 60 BPM' },
-							max: { value: 200, message: 'Максимум 200 BPM' }
-						})}
-						error={errors.bpm?.message}
+					<GenreMoodSelector
+						genres={genres}
+						moods={moods}
+						selectedGenres={selectedGenres}
+						selectedMoods={selectedMoods}
+						onGenreChange={setSelectedGenres}
+						onMoodChange={setSelectedMoods}
 					/>
-				</div>
-				
-				<LicenseSelector
-					selected={watch('licenseType')}
-					onSelect={(type) => {
-						setValue('licenseType', type)
-						if (type === 0) setValue('price', 0)
-					}}
-					register={register}
-					errors={errors}
-				/>
-				
-				<GenreMoodSelector
-					genres={genres}
-					moods={moods}
-					selectedGenres={selectedGenres}
-					selectedMoods={selectedMoods}
-					onGenreChange={setSelectedGenres}
-					onMoodChange={setSelectedMoods}
-				/>
-				
-				<TagInput tags={tags} setTags={setTags} />
-				
-				<Button
-					type="submit"
-					variant="primary"
-					className="w-full"
-					disabled={loading}
-				>
-					{loading ? 'Загрузка...' : 'Выставить на продажу'}
-				</Button>
-			</form>
+					
+					<TagInput tags={tags} setTags={setTags} />
+					
+					<Button
+						type="submit"
+						variant="primary"
+						className="w-full"
+						disabled={loading}
+					>
+						{loading ? 'Загрузка...' : 'Выставить на продажу'}
+					</Button>
+				</form>
+			</div>
 		</div>
+	
 	)
 }

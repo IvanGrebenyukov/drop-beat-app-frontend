@@ -15,6 +15,7 @@ export interface Mood {
 
 export interface Beat {
 	id: string
+	beatId?: string;
 	title: string
 	price: number
 	bpm: number

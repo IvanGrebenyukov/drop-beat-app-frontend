@@ -15,6 +15,7 @@ export const ChatCard = ({ chat, type }: { chat: any; type: 'private' | 'genre' 
 		lastMessage?: string
 	}>()
 	
+	
 	useEffect(() => {
 		const fetchDetails = async () => {
 			try {

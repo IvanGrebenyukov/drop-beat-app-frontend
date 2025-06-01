@@ -8,7 +8,6 @@ const menuItems = [
 	{ href: '/settings/profile', label: 'Основная информация' },
 	{ href: '/settings/social', label: 'Социальные сети' },
 	{ href: '/settings/security', label: 'Безопасность' },
-	{ href: '/settings/purchases', label: 'Мои покупки' },
 ];
 
 export const SettingsMenu = () => {
@@ -29,16 +28,7 @@ export const SettingsMenu = () => {
 					{item.label}
 				</Link>
 			))}
-			{user?.role === 'Seller' && (
-				<Link href="/settings/sales"
-				      className={`block px-4 py-2 rounded ${
-								pathname === '/settings/sales'
-									? 'bg-blue-600 text-white'
-									: 'text-gray-300 hover:bg-gray-700'
-							}`}>
-					Мои продажи
-				</Link>
-			)}
+			
 		</div>
 	);
 };

@@ -25,11 +25,11 @@ export const GenreCard = ({
 			}`}
 		>
 			<div className="flex flex-col items-center gap-3">
-				<img
+				{/* <img
 					src={iconUrl}
 					alt={name}
 					className="w-20 h-20 object-contain rounded-lg"
-				/>
+				/> */}
 				<span className="text-white font-medium">{name}</span>
 			</div>
 		</button>

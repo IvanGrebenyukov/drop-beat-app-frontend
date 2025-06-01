@@ -1,3 +1,5 @@
+'use client'
+
 import { Logo } from '@/app/components/common/Logo'
 import Link from 'next/link'
 
@@ -5,11 +7,12 @@ import Link from 'next/link'
 export default function StartLoginPage() {
 	return (
 		<div className="min-h-screen bg-gray-900">
-			<header className="px-6 py-4">
+			<header className='px-6 py-4'>
+				{/* Используйте компонент без фигурных скобок */}
 				<Logo />
 			</header>
 			
-			<main className="flex flex-col items-center justify-center min-h-[calc(100vh-80px)] text-center px-4">
+			<main className='flex flex-col items-center justify-center min-h-[calc(100vh-80px)] text-center px-4'>
 				<div className="max-w-2xl space-y-8">
 					<h1 className="text-5xl font-bold text-white">
 						Создавай. Продавай. Вдохновляйся.

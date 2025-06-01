@@ -3,6 +3,7 @@
 import { AddToCartButton } from '@/app/components/common/AddToCartButton'
 import { Button } from '@/app/components/common/Button'
 import { FavoriteButton } from '@/app/components/common/FavoriteButton'
+import { Header } from '@/app/components/layout/Header'
 import apiClient from '@/app/lib/api/client'
 import { usePlayerStore } from '@/app/lib/stores/playerStore'
 import { HeartIcon, ShoppingCartIcon } from '@heroicons/react/24/outline'
@@ -49,8 +50,9 @@ export default function BeatDetailsPage({  }: { params: { id: string } }) {
 	if (!beat) return <div className="min-h-screen bg-gray-900 p-8">Loading...</div>;
 	
 	return (
-		<div className="min-h-screen bg-gray-900 p-8">
-			<div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
+		<div className="min-h-screen bg-gray-900">
+			<Header/>
+			<div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8 p-8">
 				{/* Left Column */}
 				<div className="lg:col-span-1">
 					<div className="relative group">

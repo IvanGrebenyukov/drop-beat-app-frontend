@@ -1,6 +1,7 @@
 'use client'
 
 import { Button } from '@/app/components/common/Button'
+import { Header } from '@/app/components/layout/Header'
 import apiClient from '@/app/lib/api/client'
 import { usePlayerStore } from '@/app/lib/stores/playerStore'
 import Link from 'next/link'
@@ -29,8 +30,9 @@ export default function FavoritesPage() {
 	}, [])
 	
 	return (
-		<div className="min-h-screen bg-gray-900 p-8">
-			<div className="max-w-7xl mx-auto">
+		<div className="min-h-screen bg-gray-900">
+			<Header />
+			<div className="max-w-7xl mx-auto p-8">
 				<h1 className="text-3xl font-bold mb-8">Избранное</h1>
 				
 				{isLoading ? (

@@ -11,7 +11,7 @@ export const ChatHeader = ({
 	                           userName,
 	                           userAvatar,
 	                           genreName,
-	                           genreIcon
+	                           genreIcon,
                            }: {
 	type: 'private' | 'genre'
 	userId?: string

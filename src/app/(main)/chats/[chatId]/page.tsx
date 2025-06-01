@@ -22,12 +22,15 @@ type ChatDetails = {
 	genreIcon?: string
 }
 
+type BlockStatus = 'none' | 'you-blocked' | 'you-blocked-by'
+
 export default function ChatPage() {
 	const { chatId } = useParams()
 	const { user } = useUserStore()
 	const [messages, setMessages] = useState<any[]>([])
 	const [chatDetails, setChatDetails] = useState<ChatDetails>()
 	const [loading, setLoading] = useState(true)
+	const [blockStatus, setBlockStatus] = useState<BlockStatus>('none')
 	
 	useEffect(() => {
 		const fetchChatData = async () => {
@@ -39,12 +42,28 @@ export default function ChatPage() {
 				
 				const isPrivate = typeRes.data === 'Private'
 				let details: ChatDetails = { type: isPrivate ? 'private' : 'genre' }
+				let blockStatus: BlockStatus = 'none'
 				
 				if (isPrivate) {
 					const privateChatsRes = await apiClient.get('/chat/private-chats')
 					const chat = privateChatsRes.data.find((c: any) => c.chatId === chatId)
 					const receiverId = chat.participantsId.find((id: string) => id !== user?.id)
 					const profileRes = await apiClient.get(`/profile/${receiverId}`)
+					
+					// Проверка статуса блокировки
+					try {
+						const blockResponse = await apiClient.get(`/UserBlock/is-blocked/${receiverId}`)
+						if (blockResponse.data) {
+							blockStatus = 'you-blocked'
+						} else {
+							const blockedByResponse = await apiClient.get(`/UserBlock/is-blocked-either-way/${receiverId}`)
+							if (blockedByResponse.data) {
+								blockStatus = 'you-blocked-by'
+							}
+						}
+					} catch (error) {
+						console.error('Block status check error:', error)
+					}
 					
 					details = {
 						...details,
@@ -70,6 +89,7 @@ export default function ChatPage() {
 				
 				setChatDetails(details)
 				setMessages(messagesRes.data)
+				setBlockStatus(blockStatus)
 			} catch (error) {
 				console.error('Error fetching chat data:', error)
 			} finally {
@@ -83,7 +103,7 @@ export default function ChatPage() {
 	}, [chatId, user?.id])
 	
 	const handleSendMessage = async (text: string) => {
-		if (!chatDetails) return
+		if (!chatDetails || blockStatus !== 'none') return
 		
 		try {
 			const payload = chatDetails.type === 'private'
@@ -95,6 +115,17 @@ export default function ChatPage() {
 			setMessages(newMessagesRes.data)
 		} catch (error) {
 			console.error('Error sending message:', error)
+		}
+	}
+	
+	const getBlockReason = () => {
+		switch (blockStatus) {
+			case 'you-blocked':
+				return 'Вы заблокировали этого пользователя. Новые сообщения недоступны.'
+			case 'you-blocked-by':
+				return 'Пользователь заблокировал вас. Новые сообщения недоступны.'
+			default:
+				return ''
 		}
 	}
 	
@@ -125,6 +156,7 @@ export default function ChatPage() {
 					userAvatar={chatDetails.userAvatar}
 					genreName={chatDetails.genreName}
 					genreIcon={chatDetails.genreIcon}
+					isBlocked={blockStatus !== 'none' ? blockStatus : undefined}
 				/>
 				
 				<div className="bg-gray-800 rounded-2xl flex-1 flex flex-col p-6 shadow-xl border border-gray-700">
@@ -136,7 +168,11 @@ export default function ChatPage() {
 						transition={{ delay: 0.2 }}
 						className="mt-6"
 					>
-						<MessageInput onSend={handleSendMessage} />
+						<MessageInput
+							onSend={handleSendMessage}
+							disabled={blockStatus !== 'none'}
+							blockReason={getBlockReason()}
+						/>
 					</motion.div>
 				</div>
 			</motion.div>

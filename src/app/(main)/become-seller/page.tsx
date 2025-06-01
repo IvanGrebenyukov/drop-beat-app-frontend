@@ -3,6 +3,7 @@
 import InfoStep from '@/app/(main)/become-seller/steps/InfoStep'
 import ProfileStep from '@/app/(main)/become-seller/steps/ProfileStep'
 import SocialStep from '@/app/(main)/become-seller/steps/SocialStep'
+import { Header } from '@/app/components/layout/Header'
 import { ProgressBar } from '@/app/components/seller-application/ProgressBar'
 import apiClient from '@/app/lib/api/client'
 import { useRouter } from 'next/navigation'
@@ -57,16 +58,20 @@ export default function SellerApplicationPage() {
 	if (!statusChecked) return <div className="text-center p-8">Загрузка...</div>
 	
 	return (
-		<div className="max-w-4xl mx-auto p-6">
-			<ProgressBar currentStep={currentStep} />
-			
-			{currentStep === 1 && <InfoStep onNext={handleNext} />}
-			{currentStep === 2 && (
-				<ProfileStep initialData={formData} onNext={handleNext} />
-			)}
-			{currentStep === 3 && (
-				<SocialStep initialData={formData} onSubmit={handleSubmit} />
-			)}
+		<div className="min-h-screen bg-gray-900">
+			<Header />
+			<div className="max-w-4xl mx-auto p-6">
+				<ProgressBar currentStep={currentStep} />
+				
+				{currentStep === 1 && <InfoStep onNext={handleNext} />}
+				{currentStep === 2 && (
+					<ProfileStep initialData={formData} onNext={handleNext} />
+				)}
+				{currentStep === 3 && (
+					<SocialStep initialData={formData} onSubmit={handleSubmit} />
+				)}
+			</div>
 		</div>
+	
 	)
 }

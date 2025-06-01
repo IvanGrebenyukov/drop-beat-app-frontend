@@ -2,6 +2,10 @@
 
 
 import { Button } from '@/app/components/common/Button'
+import { BlockIcon } from '@/app/components/Icon/BlockIcon'
+import { UnblockIcon } from '@/app/components/Icon/UnblockIcon'
+import { Header } from '@/app/components/layout/Header'
+import { ReportModal } from '@/app/components/profile/ReportModal'
 import { SellerBeatsGrid } from '@/app/components/profile/SellerBeatsGrid'
 import apiClient from '@/app/lib/api/client'
 import { useUserStore } from '@/app/lib/stores/userStore'
@@ -9,6 +13,8 @@ import { CheckBadgeIcon, FlagIcon } from '@heroicons/react/24/solid'
 import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
+
 
 type SocialPlatform = 'Vk' | 'YouTube' | 'Instagram' | 'TikTok' | 'SoundCloud';
 
@@ -33,6 +39,9 @@ export default function UserProfilePage({  }: { params: { userId: string } }) {
 	const [isLoading, setIsLoading] = useState(true)
 	const [isFollowLoading, setIsFollowLoading] = useState(false)
 	const router = useRouter();
+	const [isReportModalOpen, setIsReportModalOpen] = useState(false)
+	const [isBlocked, setIsBlocked] = useState(false)
+	const [isBlockLoading, setIsBlockLoading] = useState(false)
 	
 	const checkFollowing = async () => {
 		try {
@@ -44,6 +53,14 @@ export default function UserProfilePage({  }: { params: { userId: string } }) {
 		}
 	}
 	
+	const checkBlockStatus = async () => {
+		try {
+			const response = await apiClient.get(`/UserBlock/is-blocked/${params.userId}`)
+			setIsBlocked(response.data)
+		} catch (error) {
+			console.error('Block check error:', error)
+		}
+	}
 	
 	useEffect(() => {
 		const fetchData = async () => {
@@ -62,8 +79,29 @@ export default function UserProfilePage({  }: { params: { userId: string } }) {
 				setIsLoading(false)
 			}
 		}
-		fetchData()
+		if (user) {
+			fetchData()
+			checkBlockStatus() // Проверяем статус блокировки
+		}
 	}, [params.userId, user])
+	
+	const handleBlock = async () => {
+		try {
+			setIsBlockLoading(true)
+			if (isBlocked) {
+				await apiClient.post('/UserBlock/unblock', { blockedUserId: params.userId })
+			} else {
+				await apiClient.post('/UserBlock/block', { blockedUserId: params.userId })
+			}
+			setIsBlocked(!isBlocked)
+			toast.success(isBlocked ? 'Пользователь разблокирован' : 'Пользователь заблокирован')
+		} catch (error) {
+			console.error('Block error:', error)
+			toast.error('Ошибка при выполнении операции')
+		} finally {
+			setIsBlockLoading(false)
+		}
+	}
 	
 	const handleFollow = async () => {
 		try {
@@ -111,8 +149,9 @@ export default function UserProfilePage({  }: { params: { userId: string } }) {
 	const isCurrentUser = user?.id === params.userId
 	
 	return (
-		<div className="min-h-screen bg-gray-900 p-8">
-			<div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-4 gap-8">
+		<div className="min-h-screen bg-gray-900">
+			<Header />
+			<div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-4 gap-8 p-8">
 				{/* Left Column */}
 				<div className="lg:col-span-1 space-y-6">
 					<div className="relative">
@@ -121,9 +160,25 @@ export default function UserProfilePage({  }: { params: { userId: string } }) {
 							alt={profile.stageName}
 							className="w-32 h-32 rounded-full mx-auto"
 						/>
-						<button className="absolute top-0 right-0 text-red-400 hover:text-red-300">
-							<FlagIcon className="w-6 h-6" />
-						</button>
+						{!isCurrentUser && (
+							<div className="absolute top-0 right-0 flex gap-2">
+								<button
+									onClick={() => setIsReportModalOpen(true)}
+									className="text-red-400 hover:text-red-300"
+									title="Пожаловаться"
+								>
+									<FlagIcon className="w-6 h-6" />
+								</button>
+								<button
+									onClick={handleBlock}
+									disabled={isBlockLoading}
+									className={`${isBlocked ? 'text-green-400 hover:text-green-300' : 'text-red-400 hover:text-red-300'}`}
+									title={isBlocked ? 'Разблокировать' : 'Заблокировать'}
+								>
+									{isBlocked ? <UnblockIcon className="w-6 h-6" /> : <BlockIcon className="w-6 h-6" />}
+								</button>
+							</div>
+						)}
 					</div>
 					
 					<div className="text-center">
@@ -188,6 +243,13 @@ export default function UserProfilePage({  }: { params: { userId: string } }) {
 								))}
 							</div>
 						</div>
+					)}
+					{isReportModalOpen && (
+						<ReportModal
+							userId={params.userId}
+							userName={profile.stageName}
+							onClose={() => setIsReportModalOpen(false)}
+						/>
 					)}
 				</div>
 				

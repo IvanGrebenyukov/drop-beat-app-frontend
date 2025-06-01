@@ -14,7 +14,7 @@ type SocialLink = {
 const platformLabels = [
 	{ id: 0, label: 'VK' },
 	{ id: 1, label: 'YouTube' },
-	{ id: 2, label: 'Instagram' },
+	{ id: 2, label: 'Telegram' },
 	{ id: 3, label: 'TikTok' },
 	{ id: 4, label: 'SoundCloud' },
 ]
