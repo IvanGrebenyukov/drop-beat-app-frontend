@@ -53,7 +53,11 @@ export default function LoginPage() {
 				
 				setUser(response.data);
 				await fetchProfile();
-				router.push('/main');
+				if (response.data.role === 'Admin') {
+					router.push('/admin')
+				} else {
+					router.push('/main')
+				}
 			}
 			// Проверяем, требуется ли подтверждение email
 			else if (response.data.requiresEmailConfirmation) {
