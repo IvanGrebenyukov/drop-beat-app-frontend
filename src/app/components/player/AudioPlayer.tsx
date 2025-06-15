@@ -139,14 +139,14 @@ export const AudioPlayer = () => {
 				
 				{/* Controls с улучшенными анимациями */}
 				<div className="flex items-center gap-4 flex-1 justify-center">
-					<motion.button
+					{/* <motion.button
 						whileHover={{ scale: 1.1 }}
 						whileTap={{ scale: 0.9 }}
 						onClick={actions.prevTrack}
 						className="p-2 text-gray-400 hover:text-white"
 					>
 						<BackwardIcon className="w-6 h-6" />
-					</motion.button>
+					</motion.button> */}
 					
 					<motion.button
 						variants={pulseVariants}
@@ -179,14 +179,14 @@ export const AudioPlayer = () => {
 						</AnimatePresence>
 					</motion.button>
 					
-					<motion.button
+					{/* <motion.button
 						whileHover={{ scale: 1.1 }}
 						whileTap={{ scale: 0.9 }}
 						onClick={actions.nextTrack}
 						className="p-2 text-gray-400 hover:text-white"
 					>
 						<ForwardIcon className="w-6 h-6" />
-					</motion.button>
+					</motion.button> */}
 				</div>
 				
 				{/* Right Controls с анимациями */}

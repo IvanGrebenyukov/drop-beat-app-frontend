@@ -21,29 +21,58 @@ export default function ProfileStep({ initialData, onNext }: ProfileStepProps) {
 		bio: '',
 		avatar: null as File | null
 	})
+	const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
 	const [errors, setErrors] = useState<Record<string, string>>({})
 	
 	useEffect(() => {
 		const fetchProfile = async () => {
 			try {
-				const response = await apiClient.get('/profile')
+				const response = await apiClient.get('/profile');
+				const profileData = response.data;
+				
 				setFormData({
-					stageName: response.data.stageName || '',
-					firstName: response.data.firstName || '',
-					lastName: response.data.lastName || '',
-					middleName: response.data.middleName || '',
-					age: response.data.age?.toString() || '',
-					address: response.data.address || '',
-					bio: response.data.bio || '',
+					stageName: profileData.stageName || '',
+					firstName: profileData.firstName || '',
+					lastName: profileData.lastName || '',
+					middleName: profileData.middleName || '',
+					age: profileData.age?.toString() || '',
+					address: profileData.address || '',
+					bio: profileData.bio || '',
 					avatar: null
-				})
+				});
+				
+				// Установка предпросмотра аватарки
+				if (profileData.avatarUrl) {
+					setAvatarPreview(profileData.avatarUrl);
+				}
 			} catch (error) {
-				console.error('Ошибка загрузки профиля:', error)
+				console.error('Ошибка загрузки профиля:', error);
 			}
 		}
 		
-		fetchProfile()
-	}, [])
+		fetchProfile();
+	}, []);
+	
+	const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		if (e.target.files && e.target.files[0]) {
+			const file = e.target.files[0];
+			
+			// Установка файла в formData
+			setFormData({
+				...formData,
+				avatar: file
+			});
+			
+			// Создание URL для предпросмотра
+			const reader = new FileReader();
+			reader.onload = () => {
+				if (reader.result) {
+					setAvatarPreview(reader.result as string);
+				}
+			};
+			reader.readAsDataURL(file);
+		}
+	};
 	
 	const validate = () => {
 		const newErrors: Record<string, string> = {}
@@ -87,6 +116,21 @@ export default function ProfileStep({ initialData, onNext }: ProfileStepProps) {
 	
 	return (
 		<div className="space-y-6">
+			<div className="flex justify-center">
+				<div className="relative w-32 h-32 rounded-full overflow-hidden border-2 border-gray-600">
+					{avatarPreview ? (
+						<img
+							src={avatarPreview}
+							alt="Аватар"
+							className="w-full h-full object-cover"
+						/>
+					) : (
+						<div className="bg-gray-700 w-full h-full flex items-center justify-center">
+							<span className="text-gray-400">Нет фото</span>
+						</div>
+					)}
+				</div>
+			</div>
 			<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 				<Input
 					label="Псевдоним"
@@ -132,10 +176,7 @@ export default function ProfileStep({ initialData, onNext }: ProfileStepProps) {
 				<input
 					type="file"
 					accept="image/*"
-					onChange={e => setFormData({
-						...formData,
-						avatar: e.target.files?.[0] || null
-					})}
+					onChange={handleAvatarChange}
 					className="block w-full text-sm text-gray-400
             file:mr-4 file:py-2 file:px-4
             file:rounded-full file:border-0

@@ -6,6 +6,7 @@ import { useUserStore } from '@/app/lib/stores/userStore'
 import { useEffect, useState } from 'react'
 
 export default function ProfileSettingsPage() {
+	const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
 	const { user, fetchProfile } = useUserStore();
 	const [formData, setFormData] = useState({
 		stageName: '',
@@ -25,16 +26,23 @@ export default function ProfileSettingsPage() {
 		const fetchProfileData = async () => {
 			try {
 				const response = await apiClient.get('/profile');
+				const profileData = response.data;
+				
 				setFormData({
-					stageName: response.data.stageName || '',
-					firstName: response.data.firstName || '',
-					lastName: response.data.lastName || '',
-					middleName: response.data.middleName || '',
-					age: response.data.age?.toString() || '',
-					address: response.data.address || '',
-					bio: response.data.bio || '',
+					stageName: profileData.stageName || '',
+					firstName: profileData.firstName || '',
+					lastName: profileData.lastName || '',
+					middleName: profileData.middleName || '',
+					age: profileData.age?.toString() || '',
+					address: profileData.address || '',
+					bio: profileData.bio || '',
 					avatar: null
 				});
+				
+				// Установка предпросмотра аватарки
+				if (profileData.avatarUrl) {
+					setAvatarPreview(profileData.avatarUrl);
+				}
 			} catch (error) {
 				console.error('Ошибка загрузки профиля:', error);
 			}
@@ -42,6 +50,27 @@ export default function ProfileSettingsPage() {
 		
 		fetchProfileData();
 	}, [user]);
+	
+	const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		if (e.target.files && e.target.files[0]) {
+			const file = e.target.files[0];
+			
+			// Установка файла в formData
+			setFormData({
+				...formData,
+				avatar: file
+			});
+			
+			// Создание URL для предпросмотра
+			const reader = new FileReader();
+			reader.onload = () => {
+				if (reader.result) {
+					setAvatarPreview(reader.result as string);
+				}
+			};
+			reader.readAsDataURL(file);
+		}
+	};
 	
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
@@ -77,6 +106,21 @@ export default function ProfileSettingsPage() {
 			<h1 className="text-2xl font-bold mb-6">Основная информация</h1>
 			
 			<form onSubmit={handleSubmit} className="space-y-6">
+				<div className="flex justify-center">
+					<div className="relative w-32 h-32 rounded-full overflow-hidden border-2 border-gray-600">
+						{avatarPreview ? (
+							<img
+								src={avatarPreview}
+								alt="Аватар"
+								className="w-full h-full object-cover"
+							/>
+						) : (
+							<div className="bg-gray-700 w-full h-full flex items-center justify-center">
+								<span className="text-gray-400">Нет фото</span>
+							</div>
+						)}
+					</div>
+				</div>
 				<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 					<Input
 						label="Псевдоним"
@@ -112,38 +156,35 @@ export default function ProfileSettingsPage() {
 				</div>
 				
 				<div>
-					<label className="block text-sm font-medium mb-2">Аватар</label>
+					<label className='block text-sm font-medium mb-2'>Аватар</label>
 					<input
-						type="file"
-						accept="image/*"
-						onChange={(e) => setFormData({
-							...formData,
-							avatar: e.target.files?.[0] || null
-						})}
-						className="block w-full text-sm text-gray-400
+						type='file'
+						accept='image/*'
+						onChange={handleAvatarChange}
+						className='block w-full text-sm text-gray-400
               file:mr-4 file:py-2 file:px-4
               file:rounded-full file:border-0
               file:text-sm file:font-semibold
               file:bg-blue-600 file:text-white
-              hover:file:bg-blue-700"
+              hover:file:bg-blue-700'
 					/>
 				</div>
 				
 				<div>
-					<label className="block text-sm font-medium mb-2">О себе</label>
+					<label className='block text-sm font-medium mb-2'>О себе</label>
 					<textarea
 						value={formData.bio}
 						onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-						className="w-full px-4 py-2 bg-gray-700 rounded-lg text-white
+						className='w-full px-4 py-2 bg-gray-700 rounded-lg text-white
               focus:ring-2 focus:ring-blue-500 outline-none
-              placeholder:text-gray-400"
+              placeholder:text-gray-400'
 						rows={4}
 					/>
 				</div>
 				
-				<div className="flex justify-end">
-					<Button type="submit" variant="primary">
-						Сохранить изменения
+				<div className='flex justify-end'>
+					<Button type='submit' variant='primary'>
+					Сохранить изменения
 					</Button>
 				</div>
 			</form>

@@ -95,7 +95,6 @@ export default function UploadBeatPage() {
 					'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
 				}
 			})
-			alert('Бит успешно добавлен!')
 			router.push(`/beat/${response.data}`)
 			// Редирект на страницу бита
 		} catch (error) {
